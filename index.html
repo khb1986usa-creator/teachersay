@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>강사님께 한마디 📢</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  
+  <style>
+    /* 디자인은 아까와 동일하게 유지 */
+    :root {
+      --primary-color: #6200ea;
+      --primary-light: #9d46ff;
+      --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --text-main: #2d3436;
+      --text-sub: #636e72;
+      --input-bg: #fdfdfd;
+      --shadow: 0 10px 30px rgba(0,0,0,0.1);
+      --radius: 16px;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 0;
+      font-family: 'Pretendard', -apple-system, sans-serif;
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex; justify-content: center; align-items: center;
+      color: var(--text-main);
+    }
+    .container {
+      width: 100%; max-width: 420px; margin: 20px; padding: 2.5rem 2rem;
+      background: var(--card-bg); border-radius: var(--radius);
+      box-shadow: var(--shadow); backdrop-filter: blur(10px);
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+    header { text-align: center; }
+    h1 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--primary-color); }
+    p.desc { margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-sub); }
+    .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
+    label { font-weight: 600; font-size: 0.9rem; margin-left: 4px; }
+    input, textarea {
+      width: 100%; padding: 14px;
+      border: 2px solid transparent; background-color: var(--input-bg);
+      border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;
+    }
+    input:focus, textarea:focus {
+      outline: none; border-color: var(--primary-light); background-color: #fff;
+    }
+    textarea { resize: none; height: 140px; }
+    .submit-btn {
+      margin-top: 1rem; width: 100%; padding: 16px;
+      background: var(--primary-color); color: white; border: none;
+      border-radius: 12px; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+      position: relative; transition: background 0.3s;
+    }
+    .submit-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+    .spinner {
+      display: none; width: 24px; height: 24px;
+      border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+      border-top-color: #fff; animation: spin 0.8s infinite;
+      position: absolute; left: 50%; top: 50%; margin: -12px 0 0 -12px;
+    }
+    .loading .btn-text { opacity: 0; }
+    .loading .spinner { display: block; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .toast {
+      visibility: hidden; min-width: 280px; background-color: #00b894; color: #fff;
+      text-align: center; border-radius: 50px; padding: 16px;
+      position: fixed; z-index: 1000; left: 50%; bottom: 30px;
+      transform: translateX(-50%) translateY(20px); opacity: 0; transition: all 0.4s;
+    }
+    .toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 480px) { .container { height: 100vh; border-radius: 0; justify-content: center; } }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <header>
+      <h1>강사님께 한마디 📢</h1>
+      <p class="desc">수업 중 궁금한 점이나<br>하고 싶은 말을 남겨주세요.</p>
+    </header>
+
+    <div class="form-group">
+      <label for="username">이름</label>
+      <input type="text" id="username" placeholder="이름을 입력하세요" required autocomplete="off">
+    </div>
+
+    <div class="form-group">
+      <label for="message">내용</label>
+      <textarea id="message" placeholder="내용을 작성해주세요 (최대 200자)" maxlength="200" required></textarea>
+    </div>
+
+    <button id="submitBtn" class="submit-btn" onclick="submitForm()">
+      <span class="btn-text">보내기</span>
+      <div class="spinner"></div>
+    </button>
+  </div>
+
+  <div id="toast" class="toast">성공적으로 등록되었습니다! ✅</div>
+
+  <script>
+    // ✅ 여기에 네가 준 Apps Script 배포 URL을 넣었어!
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrbnQ-8DQqdPf2c-Xs7dJ7kfRKWNM4rLmA407m4icJvHIxWpf_UxT8FTBWwrWPNzDk/exec";
+
+    function submitForm() {
+      const nameInput = document.getElementById('username');
+      const msgInput = document.getElementById('message');
+      const btn = document.getElementById('submitBtn');
+
+      const name = nameInput.value.trim();
+      const message = msgInput.value.trim();
+
+      if (!name || !message) {
+        alert("이름과 내용을 모두 입력해주세요! ✍️");
+        return;
+      }
+
+      // 로딩 UI 시작
+      btn.classList.add('loading');
+      btn.disabled = true;
+
+      // fetch를 사용하여 GAS 백엔드로 데이터 전송
+      // 중요: CORS 오류를 피하기 위해 Content-Type을 명시하지 않거나 text/plain으로 보냄
+      fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        body: JSON.stringify({ name: name, message: message })
+      })
+      .then(response => response.json())
+      .then(res => {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+
+        if (res.success) {
+          showToast();
+          nameInput.value = '';
+          msgInput.value = '';
+        } else {
+          alert("전송 실패: " + res.error);
+        }
+      })
+      .catch(error => {
+        btn.classList.remove('loading');
+        btn.disabled = false;
+        console.error('Error:', error);
+        alert("서버 통신 오류가 발생했습니다. (GitHub -> GAS 연결 문제)");
+      });
+    }
+
+    function showToast() {
+      const toast = document.getElementById("toast");
+      toast.className = "toast show";
+      setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
+    }
+  </script>
+</body>
+</html>
