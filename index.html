@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   
   <style>
-    /* 디자인은 아까와 동일하게 유지 */
+    /* [Design System] 세련된 모바일 퍼스트 디자인 */
     :root {
       --primary-color: #6200ea;
       --primary-light: #9d46ff;
@@ -18,35 +18,44 @@
       --shadow: 0 10px 30px rgba(0,0,0,0.1);
       --radius: 16px;
     }
+
     * { box-sizing: border-box; }
+
     body {
       margin: 0; padding: 0;
-      font-family: 'Pretendard', -apple-system, sans-serif;
+      font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
       background: var(--bg-gradient);
       min-height: 100vh;
       display: flex; justify-content: center; align-items: center;
       color: var(--text-main);
     }
+
     .container {
       width: 100%; max-width: 420px; margin: 20px; padding: 2.5rem 2rem;
       background: var(--card-bg); border-radius: var(--radius);
       box-shadow: var(--shadow); backdrop-filter: blur(10px);
       display: flex; flex-direction: column; gap: 1.5rem;
     }
+
     header { text-align: center; }
     h1 { margin: 0; font-size: 1.6rem; font-weight: 800; color: var(--primary-color); }
-    p.desc { margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-sub); }
+    p.desc { margin-top: 0.5rem; font-size: 0.95rem; color: var(--text-sub); line-height: 1.4; }
+
     .form-group { display: flex; flex-direction: column; gap: 0.5rem; }
     label { font-weight: 600; font-size: 0.9rem; margin-left: 4px; }
+    
     input, textarea {
       width: 100%; padding: 14px;
       border: 2px solid transparent; background-color: var(--input-bg);
       border-radius: 12px; font-size: 1rem; transition: all 0.3s ease;
+      font-family: inherit;
     }
     input:focus, textarea:focus {
       outline: none; border-color: var(--primary-light); background-color: #fff;
+      box-shadow: 0 0 0 4px rgba(98, 0, 234, 0.1);
     }
     textarea { resize: none; height: 140px; }
+
     .submit-btn {
       margin-top: 1rem; width: 100%; padding: 16px;
       background: var(--primary-color); color: white; border: none;
@@ -54,6 +63,8 @@
       position: relative; transition: background 0.3s;
     }
     .submit-btn:disabled { background: #b2bec3; cursor: not-allowed; }
+    .submit-btn:hover:not(:disabled) { background: var(--primary-light); }
+
     .spinner {
       display: none; width: 24px; height: 24px;
       border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
@@ -63,13 +74,16 @@
     .loading .btn-text { opacity: 0; }
     .loading .spinner { display: block; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .toast {
       visibility: hidden; min-width: 280px; background-color: #00b894; color: #fff;
       text-align: center; border-radius: 50px; padding: 16px;
       position: fixed; z-index: 1000; left: 50%; bottom: 30px;
       transform: translateX(-50%) translateY(20px); opacity: 0; transition: all 0.4s;
+      font-weight: 600; box-shadow: 0 5px 15px rgba(0,0,0,0.2);
     }
     .toast.show { visibility: visible; opacity: 1; transform: translateX(-50%) translateY(0); }
+
     @media (max-width: 480px) { .container { height: 100vh; border-radius: 0; justify-content: center; } }
   </style>
 </head>
@@ -100,8 +114,8 @@
   <div id="toast" class="toast">성공적으로 등록되었습니다! ✅</div>
 
   <script>
-    // ✅ 여기에 네가 준 Apps Script 배포 URL을 넣었어!
-    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyrbnQ-8DQqdPf2c-Xs7dJ7kfRKWNM4rLmA407m4icJvHIxWpf_UxT8FTBWwrWPNzDk/exec";
+    // ✅ 네가 방금 알려준 새로운 Apps Script 배포 주소로 업데이트했어!
+    const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxrqSotqr-vJ1VlzVGFqw89x2avjF6c_FMoG8AjEdFcEMQ5EYtSJzkgEgAdvtFn5cKLng/exec";
 
     function submitForm() {
       const nameInput = document.getElementById('username');
@@ -120,10 +134,10 @@
       btn.classList.add('loading');
       btn.disabled = true;
 
-      // fetch를 사용하여 GAS 백엔드로 데이터 전송
-      // 중요: CORS 오류를 피하기 위해 Content-Type을 명시하지 않거나 text/plain으로 보냄
+      // Google Apps Script 백엔드로 데이터 전송
       fetch(APPS_SCRIPT_URL, {
         method: "POST",
+        // CORS 문제 방지를 위해 text/plain으로 전송 (GAS가 알아서 처리함)
         body: JSON.stringify({ name: name, message: message })
       })
       .then(response => response.json())
@@ -132,18 +146,20 @@
         btn.disabled = false;
 
         if (res.success) {
-          showToast();
-          nameInput.value = '';
+          showToast(); // 성공 토스트 메시지
+          nameInput.value = ''; // 입력창 비우기
           msgInput.value = '';
         } else {
-          alert("전송 실패: " + res.error);
+          // 실패 시 에러 메시지 출력
+          console.error(res);
+          alert("전송 실패: " + JSON.stringify(res.error));
         }
       })
       .catch(error => {
         btn.classList.remove('loading');
         btn.disabled = false;
-        console.error('Error:', error);
-        alert("서버 통신 오류가 발생했습니다. (GitHub -> GAS 연결 문제)");
+        console.error('Fetch Error:', error);
+        alert("서버 연결에 실패했습니다.\n(잠시 후 다시 시도해주세요)");
       });
     }
 
