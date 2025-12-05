@@ -5,136 +5,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>강사에게 한마디 💬</title>
     
-    <!-- 폰트: 프리텐다드 (깔끔한 고딕) -->
+    <!-- 폰트: 프리텐다드 -->
     <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.8/dist/web/static/pretendard.css" />
-    <!-- 알림창 라이브러리 (SweetAlert2) -->
+    <!-- 알림창 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <style>
         :root {
-            --primary-color: #6366f1; /* Indigo */
+            --primary-color: #6366f1;
             --primary-hover: #4f46e5;
             --bg-color: #f3f4f6;
             --card-bg: #ffffff;
             --text-main: #1f2937;
             --text-sub: #6b7280;
         }
-
         * { box-sizing: border-box; outline: none; }
-        
         body {
-            margin: 0;
-            padding: 0;
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            background-color: var(--bg-color);
-            background-image: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            color: var(--text-main);
+            margin: 0; padding: 0;
+            font-family: 'Pretendard', sans-serif;
+            background: linear-gradient(135deg, #e0e7ff 0%, #f3f4f6 100%);
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; color: var(--text-main);
         }
-
-        /* 메인 카드 컨테이너 */
         .card {
-            background: var(--card-bg);
-            width: 90%;
-            max-width: 420px;
-            padding: 2.5rem 2rem;
-            border-radius: 24px;
+            background: var(--card-bg); width: 90%; max-width: 420px;
+            padding: 2.5rem 2rem; border-radius: 24px;
             box-shadow: 0 10px 40px -10px rgba(0,0,0,0.1);
             animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
-        /* 헤더 영역 */
         header { text-align: center; margin-bottom: 2rem; }
-        h1 { font-size: 1.5rem; margin: 0 0 8px 0; font-weight: 700; color: #111; }
-        p.subtitle { font-size: 0.95rem; color: var(--text-sub); margin: 0; line-height: 1.5; }
-
-        /* 입력 폼 스타일 */
+        h1 { font-size: 1.5rem; margin: 0 0 8px 0; font-weight: 700; }
+        p.subtitle { font-size: 0.95rem; color: var(--text-sub); line-height: 1.5; }
         .form-group { margin-bottom: 1.25rem; }
         label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #374151; }
-        
         input, textarea {
-            width: 100%;
-            padding: 14px;
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            font-size: 1rem;
-            font-family: inherit;
-            transition: all 0.2s ease;
-            background: #f9fafb;
+            width: 100%; padding: 14px; border: 2px solid #e5e7eb;
+            border-radius: 12px; font-size: 1rem; font-family: inherit;
+            transition: all 0.2s ease; background: #f9fafb;
         }
-
-        input::placeholder, textarea::placeholder { color: #9ca3af; }
-
         input:focus, textarea:focus {
-            border-color: var(--primary-color);
-            background: #fff;
+            border-color: var(--primary-color); background: #fff;
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
         }
-
-        textarea {
-            resize: none;
-            height: 140px;
-            line-height: 1.6;
-        }
-
-        /* 버튼 스타일 */
+        textarea { resize: none; height: 140px; line-height: 1.6; }
         button.submit-btn {
-            width: 100%;
-            padding: 16px;
-            border: none;
-            border-radius: 14px;
-            background-color: var(--primary-color);
-            color: white;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin-top: 10px;
+            width: 100%; padding: 16px; border: none; border-radius: 14px;
+            background-color: var(--primary-color); color: white;
+            font-size: 1.1rem; font-weight: 600; cursor: pointer;
+            transition: all 0.3s ease; display: flex; justify-content: center;
+            align-items: center; margin-top: 10px;
             box-shadow: 0 4px 6px rgba(99, 102, 241, 0.2);
         }
-
-        button.submit-btn:hover {
-            background-color: var(--primary-hover);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(99, 102, 241, 0.3);
-        }
-
-        button.submit-btn:active { transform: translateY(0); }
-        
-        button.submit-btn:disabled {
-            background-color: #d1d5db;
-            color: #9ca3af;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        /* 로딩 스피너 */
+        button.submit-btn:disabled { background-color: #d1d5db; cursor: not-allowed; box-shadow: none; }
         .spinner {
-            display: none;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(255,255,255,0.3);
-            border-radius: 50%;
-            border-top-color: #fff;
-            animation: spin 1s ease-in-out infinite;
-            margin-right: 10px;
+            display: none; width: 20px; height: 20px;
+            border: 3px solid rgba(255,255,255,0.3); border-radius: 50%;
+            border-top-color: #fff; animation: spin 1s infinite; margin-right: 10px;
         }
-
         @keyframes spin { to { transform: rotate(360deg); } }
         @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* 모바일 대응 미디어 쿼리 */
-        @media (max-width: 480px) {
-            .card { width: 92%; padding: 2rem 1.5rem; }
-            h1 { font-size: 1.35rem; }
-        }
     </style>
 </head>
 <body>
@@ -164,13 +93,11 @@
     </div>
 
     <script>
-        // ============================================================
-        // [설정 완료] 배포하신 Google Apps Script 주소를 적용했습니다.
-        // ============================================================
+        // 제공해주신 스크립트 주소
         const GAS_WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyQtCtNad2Fqv9j-g4Cz13wIlaRwxjGqxhlpPue_CE5IOKA9jbcSJT--x1UekRZGN7I7A/exec"; 
 
         function handleSubmit(event) {
-            event.preventDefault(); // 폼 기본 제출 동작 막기
+            event.preventDefault();
 
             const nameInput = document.getElementById('name');
             const messageInput = document.getElementById('message');
@@ -178,63 +105,60 @@
             const spinner = document.querySelector('.spinner');
             const btnText = document.getElementById('btnText');
 
-            // 유효성 검사
             if (!nameInput.value.trim() || !messageInput.value.trim()) {
-                Swal.fire({
-                    icon: 'warning',
-                    title: '입력 확인',
-                    text: '이름과 내용을 모두 작성해주세요!',
-                    confirmButtonColor: '#6366f1'
-                });
+                Swal.fire({ icon: 'warning', title: '입력 확인', text: '이름과 내용을 모두 작성해주세요!', confirmButtonColor: '#6366f1' });
                 return;
             }
 
-            // UI 상태 변경 (로딩 중)
+            // 로딩 표시
             submitBtn.disabled = true;
             spinner.style.display = 'block';
             btnText.innerText = '전송 중...';
 
-            // 데이터 준비
-            const payload = {
-                name: nameInput.value,
-                message: messageInput.value
-            };
-
-            // 전송 (CORS 우회를 위해 text/plain 방식 사용)
+            // 데이터 전송
             fetch(GAS_WEB_APP_URL, {
                 method: 'POST',
-                body: JSON.stringify(payload)
+                // 명시적으로 text/plain 설정하여 CORS 문제 최소화
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                body: JSON.stringify({
+                    name: nameInput.value,
+                    message: messageInput.value
+                })
             })
-            .then(response => response.json()) // GAS에서 JSON으로 응답을 줍니다.
+            .then(response => response.json())
             .then(data => {
                 if (data.result === 'success') {
-                    // 성공 알림 (SweetAlert2)
                     Swal.fire({
-                        icon: 'success',
-                        title: '전송 완료!',
-                        text: '소중한 의견이 강사님께 전달되었습니다.',
-                        confirmButtonText: '확인',
+                        icon: 'success', title: '전송 완료!', text: '소중한 의견이 강사님께 전달되었습니다.',
                         confirmButtonColor: '#6366f1'
                     }).then(() => {
-                        // 폼 초기화 및 페이지 새로고침(선택사항)
-                        nameInput.value = '';
-                        messageInput.value = '';
+                        nameInput.value = ''; messageInput.value = '';
                     });
                 } else {
-                    throw new Error(data.message || 'Unknown Error');
+                    // 서버 에러 상세 처리
+                    console.error("Server Error:", data);
+                    let errMsg = "전송에 실패했습니다.";
+                    try {
+                        // Padlet 에러 메시지가 JSON 형태라면 파싱해서 보여주기
+                        const errObj = JSON.parse(data.message);
+                        if(errObj.errors && errObj.errors[0]) {
+                            errMsg += `\n(${errObj.errors[0].detail || errObj.errors[0].message})`;
+                        }
+                    } catch(e) {
+                        errMsg += `\n(${data.message})`;
+                    }
+                    throw new Error(errMsg);
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
+                console.error('Fetch Error:', error);
                 Swal.fire({
-                    icon: 'error',
-                    title: '전송 실패',
-                    text: '오류가 발생했습니다. 잠시 후 다시 시도해주세요.',
+                    icon: 'error', title: '전송 실패',
+                    text: error.message || '네트워크 오류가 발생했습니다.',
                     confirmButtonColor: '#ef4444'
                 });
             })
             .finally(() => {
-                // UI 상태 복구
                 submitBtn.disabled = false;
                 spinner.style.display = 'none';
                 btnText.innerText = '의견 보내기';
